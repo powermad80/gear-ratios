@@ -27,35 +27,34 @@ public:
     schematic.insert(schematic.begin(), line1);
     schematic.push_back(line2);
   }
-  void processLine(std::vector<std::string> schematicPart) {
+  void processLine(std::string prevLine, std::string &curLine,
+                   std::string nextLine) {
     char c;
-    for (int i = 0; i < schematicPart[1].length(); i++) {
-      c = schematicPart[1][i];
+    for (int i = 0; i < curLine.length(); i++) {
+      c = curLine[i];
 
-      if (isdigit(c) && (i > 0 && i < schematicPart[1].length())) {
-        if (i == 0 || schematicPart[0][i - 1] == '.' ||
-            isdigit(schematicPart[0][i - 1]) && schematicPart[0][i] == '.' ||
-            isdigit(schematicPart[0][i]) && i == schematicPart[1].length() ||
-            schematicPart[0][i + 1] == '.' ||
-            isdigit(schematicPart[0][i + 1]) && i == 0 ||
-            schematicPart[1][i - 1] == '.' ||
-            isdigit(schematicPart[1][i - 1]) &&
-                i == schematicPart[1].length() ||
-            schematicPart[1][i + 1] == '.' ||
-            isdigit(schematicPart[1][i + 1]) && i == 0 ||
-            schematicPart[2][i - 1] == '.' ||
-            isdigit(schematicPart[2][i - 1]) && schematicPart[2][i] == '.' ||
-            isdigit(schematicPart[2][i]) && i == schematicPart[1].length() ||
-            schematicPart[2][i + 1] == '.' ||
-            isdigit(schematicPart[2][i + 1])) {
-          schematicPart[1][i] = '.';
+      if (isdigit(c) && (i > 0 && i < curLine.length())) {
+        if (i == 0 || prevLine[i - 1] == '.' ||
+            isdigit(prevLine[i - 1]) && prevLine[i] == '.' ||
+            isdigit(prevLine[i]) && i == curLine.length() ||
+            prevLine[i + 1] == '.' || isdigit(prevLine[i + 1]) && i == 0 ||
+            curLine[i - 1] == '.' ||
+            isdigit(curLine[i - 1]) && i == curLine.length() ||
+            curLine[i + 1] == '.' || isdigit(curLine[i + 1]) && i == 0 ||
+            nextLine[i - 1] == '.' ||
+            isdigit(nextLine[i - 1]) && nextLine[i] == '.' ||
+            isdigit(nextLine[i]) && i == curLine.length() ||
+            nextLine[i + 1] == '.' || isdigit(nextLine[i + 1])) {
+          curLine[i] = '.';
         }
       }
     }
   }
+
   void eliminateInvalidNumbers() {
-    getSchematic();
-    addLinePadding();
+    for (int i = 1; i < schematic.size() - 1; i++) {
+      processLine(schematic[i - 1], schematic[i], schematic[i + 1]);
+    }
   }
 };
 
