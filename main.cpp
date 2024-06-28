@@ -5,6 +5,7 @@
 class SchematicProcessor {
 public:
   std::vector<std::string> schematic;
+  int partNumber;
   void getSchematic() {
     std::ifstream file("input.txt");
     std::string line;
@@ -55,6 +56,30 @@ public:
     for (int i = 1; i < schematic.size() - 1; i++) {
       processLine(schematic[i - 1], schematic[i], schematic[i + 1]);
     }
+  }
+
+  void addValidNumbers() {
+    std::string line;
+    std::string numberLine = "";
+    char c;
+    int total = 0;
+    for (int i = 1; i < schematic.size(); i++) {
+      line = schematic[i];
+      for (int j = 0; j < line.size(); j++) {
+        c = line[j];
+        if (isdigit(c)) {
+          numberLine =
+              numberLine +
+              c; // nah, convert this to an iterator later. it'll work better
+        }
+      }
+    }
+  }
+
+  int getModelNumber() {
+    getSchematic();
+    addLinePadding();
+    eliminateInvalidNumbers();
   }
 };
 
