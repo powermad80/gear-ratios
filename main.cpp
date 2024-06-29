@@ -15,7 +15,7 @@ public:
     }
 
     while (std::getline(file, line)) {
-      schematic.push_back(line);
+      schematic.push_back('.' + line + '.');
     }
   }
   void addLinePadding() {
@@ -28,64 +28,82 @@ public:
     schematic.insert(schematic.begin(), line1);
     schematic.push_back(line2);
   }
-  void processLine(std::string prevLine, std::string &curLine,
-                   std::string nextLine) {
+  int processLine(std::string prevLine, std::string &curLine,
+                  std::string nextLine) {
+    int total = 0;
+    std::string numLine;
+    bool isValid;
     char c;
-    for (int i = 0; i < curLine.length(); i++) {
+    for (int i = 1; i < curLine.length() - 1; i++) {
       c = curLine[i];
-
-      if (isdigit(c) && (i > 0 && i < curLine.length())) {
-        if (i == 0 || prevLine[i - 1] == '.' ||
-            isdigit(prevLine[i - 1]) && prevLine[i] == '.' ||
-            isdigit(prevLine[i]) && i == curLine.length() ||
-            prevLine[i + 1] == '.' || isdigit(prevLine[i + 1]) && i == 0 ||
-            curLine[i - 1] == '.' ||
-            isdigit(curLine[i - 1]) && i == curLine.length() ||
-            curLine[i + 1] == '.' || isdigit(curLine[i + 1]) && i == 0 ||
-            nextLine[i - 1] == '.' ||
-            isdigit(nextLine[i - 1]) && nextLine[i] == '.' ||
-            isdigit(nextLine[i]) && i == curLine.length() ||
-            nextLine[i + 1] == '.' || isdigit(nextLine[i + 1])) {
-          curLine[i] = '.';
+      isValid = false;
+      numLine = "";
+      while (isdigit(c) && i < curLine.length() - 1) {
+        if (prevLine[i] != '.' && !isdigit(prevLine[i]) ||
+            prevLine[i - 1] != '.' && !isdigit(prevLine[i - 1]) ||
+            prevLine[i + 1] != '.' && !isdigit(prevLine[i + 1]) ||
+            curLine[i - 1] != '.' && !isdigit(curLine[i - 1]) ||
+            curLine[i + 1] != '.' && !isdigit(curLine[i + 1]) ||
+            nextLine[i] != '.' && !isdigit(nextLine[i]) ||
+            nextLine[i - 1] != '.' && !isdigit(nextLine[i - 1]) ||
+            nextLine[i + 1] != '.' && !isdigit(nextLine[i + 1])) {
+          isValid = true;
         }
+
+        numLine.push_back(c);
+        i++;
+        c = curLine[i];
+      }
+      if (isValid && numLine != "") {
+        total += stoi(numLine);
       }
     }
+    return total;
   }
 
-  void eliminateInvalidNumbers() {
+  int eliminateInvalidNumbers() {
+    int total = 0;
     for (int i = 1; i < schematic.size() - 1; i++) {
-      processLine(schematic[i - 1], schematic[i], schematic[i + 1]);
+      total += processLine(schematic[i - 1], schematic[i], schematic[i + 1]);
     }
+    return total;
   }
 
-  void addValidNumbers() {
+  int addValidNumbers() {
 
-    std::string::iterator schemaLine;
+    std::string::iterator lineIt;
     std::vector<std::string>::iterator it;
     std::string numberLine = "";
-    char c;
     int total = 0;
     for (auto it = schematic.begin(); it != schematic.end(); it++) {
-      for (auto schemaLine = it.begin(); schemaLine != it.end(); schemaLine++) {
-        c = ;
-        if (isdigit(c)) {
-          numberLine =
-              numberLine +
-              c; // nah, convert this to an iterator later. it'll work better
+      for (auto lineIt = it->begin(); lineIt != it->end(); lineIt++) {
+        numberLine = "";
+        while (lineIt != it->end() && isdigit(*lineIt)) {
+          numberLine += *lineIt;
+          lineIt++;
+        }
+        if (numberLine != "") {
+          total += stoi(numberLine);
         }
       }
     }
+    return total;
   }
 
   int getModelNumber() {
+    std::cout << "Retrieving schematic...\n";
     getSchematic();
+    std::cout << "Padding boundaries...\n";
     addLinePadding();
-    eliminateInvalidNumbers();
+    std::cout << "Eliminating invalid numbers...\n";
+    return eliminateInvalidNumbers();
   }
 };
 
 int main() {
   SchematicProcessor santa;
-  santa.eliminateInvalidNumbers();
+  int result;
+  result = santa.getModelNumber();
+  std::cout << result << "\n";
   return 0;
 }
