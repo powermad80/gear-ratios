@@ -59,14 +59,15 @@ public:
   }
 
   void addValidNumbers() {
-    std::string line;
+
+    std::string::iterator schemaLine;
+    std::vector<std::string>::iterator it;
     std::string numberLine = "";
     char c;
     int total = 0;
-    for (int i = 1; i < schematic.size(); i++) {
-      line = schematic[i];
-      for (int j = 0; j < line.size(); j++) {
-        c = line[j];
+    for (auto it = schematic.begin(); it != schematic.end(); it++) {
+      for (auto schemaLine = it.begin(); schemaLine != it.end(); schemaLine++) {
+        c = ;
         if (isdigit(c)) {
           numberLine =
               numberLine +
